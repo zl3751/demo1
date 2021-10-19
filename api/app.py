@@ -28,6 +28,8 @@ def test_page():
 		'query': "XX"
 	}
 
+### git test
+
 @app.route('/query', methods=["GET"])
 def query_once():
 	query = model.query()
