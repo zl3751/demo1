@@ -7,21 +7,6 @@
 <script>
 export default {
   name: 'App'
-  // data () {
-  //   return {
-  //     datetime: ''
-  //   }
-  // },
-  // methods: {
-  //   initData () {
-  //     this.$ajax.get('/time', {}).then(res => {
-  //       this.datetime = res.data.time
-  //     })
-  //   }
-  // },
-  // mounted () {
-  //   this.initData()
-  // }
 }
 </script>
 

@@ -68,8 +68,9 @@ class ALModel:
         query_strategy = self.sample_strategy,
         X_training = self.X_train_tfidf, 
         y_training = self.Y_train)
-    self.performance.append(self.score())
+    self.score()
     
-   
+  def get_performance(self):
+    return self.performance
      
    
