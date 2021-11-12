@@ -1,21 +1,16 @@
 <template>
-  <div>
-    <h1 class="home">active learner</h1>
-    <button @click="handleStartClick">
-      Start Training
-    </button>
+  <div id='home' class='home'>
+    <h1 id='homeheader' class="home">active learner</h1>
     <button @click="handleQuery">Query</button>
       <p>{{query_content}}</p>
-    <button @click="handlePositiveClick">Positive</button>
-    <button @click="handleNegativeClick">Negative</button>
-    <score-chart v-if='loaded'
-                :chartData='chartData'
-                :options='options'/>
+    <button class='button_p' @click="handlePositiveClick">Positive</button>
+    <button class='button_n' @click="handleNegativeClick">Negative</button><br>
+    <br><br><hole class='graph' :data='uncertainties'></hole>
   </div>
 </template>
 
 <script>
-import ScoreChart from './components/ScoreChart'
+import hole from './components/hole.vue'
 
 export default ({
   name: 'Home',
@@ -23,67 +18,48 @@ export default ({
     return {
       query_content: '',
       query_idx: -1,
-      started: false,
-      loaded: false,
-      chartData: {
-        labels: [],
-        datasets: [{
-          label: 'Score',
-          data: []}
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
+      uncertainties: [],
+      performance: []
+    }
+  },
+  computed: {
+    uncertainty () {
+      return this.data
     }
   },
   methods: {
-    async handleStartClick () {
-      this.started = true
-      await this.$ajax.get('/model/pre', {}).then(res => {
-        const initScore = res.data.newscore
-        this.updateChartData(initScore)
-      })
-      this.loaded = true
-    },
     handlePositiveClick: function () {
       this.$ajax.post('/model/label', {'label': 1, 'idx': this.query_idx}).then(res => {
-        console.log('p update')
-        this.updateChartData(res.data.performance)
-        console.log(this.chartData.datasets[0].data)
-        console.log(this.chartData.labels)
+        this.uncertainties.push(res.data.uncertainty)
+        this.performance = res.data.performance
       })
     },
     handleNegativeClick: function () {
       this.$ajax.post('/model/label', {'label': 0, 'idx': this.query_idx}).then(res => {
         console.log('n update')
-        this.updateChartData(res.data.performance)
-        console.log(this.chartData.datasets[0].data)
-        console.log(this.chartData.labels)
       })
     },
     handleQuery: function () {
       this.$ajax.get('/model/query', {}).then(res => {
         this.query_content = res.data.content
-        this.query_idx = res.data.idx
+        this.query_idx = res.data.index
         console.log(res.data.oracle)
       })
-    },
-    updateChartData: function (newData) {
-      const len = this.chartData.datasets[0].data.length
-      this.chartData.datasets[0].data.push(newData)
-      this.chartData.labels.push(len.toString())
     }
   },
   mounted () {
     //
   },
   components: {
-    ScoreChart
+    hole
   }
 })
 </script>
 
 <style>
+  /* .graph {
+    position: absolute;
+    left: 38%;
+    outline: 2px solid black;
+    /* outline-offset: 1px; */
 </style>
